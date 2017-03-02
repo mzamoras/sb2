@@ -1,0 +1,269 @@
+@import "variables";
+
+@componentName: classNamePlaceholder;
+
+@trackBg: fade(@track_color, @intensity/2*3);
+@trackBg_hover: fade(@track_hover_color, @intensity/1.25);
+@trackBg_active: fade(@track_active_color, @intensity/1.25);
+
+@thumbBg_ghost: fade(@thumb_color, @intensity * 3);
+@thumbBg_normal: fade(@thumb_color, @intensity * 7);
+@thumbBg_hover: fade(@thumb_hover_color, @intensity * 7);
+@thumbBg_active: fade(@thumb_active_color, @intensity * 7);
+
+@borderExpanded: fade(@track_color, (@intensity/2) * 3);
+@contrastColor: fade(@thumb_contrast_border_color, 30);
+
+@barWidth: 15px;
+@thumbSize: 8px;
+
+.@{componentName} {
+
+    &::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    .sb2view {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: scroll;
+        &:extend(.hack);
+
+        &::-webkit-scrollbar {
+            display: none !important;
+        }
+    }
+
+    .sb2tracks {
+        position: absolute;
+        background: @trackBg;
+        padding: 3px 2px;
+        transition: opacity 200ms;
+        opacity: 1;
+
+        &.sb2init-hidden {
+            display: none;
+        }
+        //opacity: 0;
+
+        &.sb2h {
+            bottom: 0;
+            left: 0;
+            right: (0 + (@barWidth ) - 3);
+
+            &.extended {
+                right: 0;
+            }
+        }
+
+        &.sb2v {
+            bottom: 0;
+            top: 0;
+            right: 0;
+
+            &.shrinked {
+                padding-bottom: @barWidth;
+            }
+
+        }
+
+        &.inactive {
+            opacity: 0;
+            &.sb2h {
+                bottom: -@barWidth;
+            }
+            &.sb2v {
+                right: -@barWidth;
+            }
+        }
+    }
+
+    .sb2thumbs {
+        border-radius: @thumbSize / 2;
+        background: #AAA;
+        &.sb2h {
+            height: @thumbSize;
+        }
+
+        &.sb2v {
+            width: @thumbSize;
+        }
+    }
+}
+
+._defCursor {
+    cursor: default !important;
+}
+
+._noSelectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    &:extend( ._defCursor );
+}
+
+._noOutline {
+    outline: none 0 !important;
+    -moz-outline-style: none !important;
+}
+
+.hack {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/*&::-webkit-scrollbar {
+    display: none !important;
+}
+
+!** V I E W  **!
+& > .sb2-view {
+    &:extend( ._noOutline );
+
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+        display: none  !important;
+    }
+
+    &.performant{
+        &:extend( ._backfacePerformanceFix );
+    }
+}
+
+!** T R A C K S  **!
+&  > .sb2-track {
+    &:extend( ._animable );
+    &:extend( ._defCursor );
+
+    &.sb2-v{ margin-right:  @track_margin; }
+    &.sb2-h{ margin-bottom: @track_margin; }
+
+    background-color: @_trackBg;
+    border-radius:    @track_roundness;
+    transition:       opacity @opacity_transitions;
+    padding:          @thumb_margin - @thumb_contrast_border_width; // beacuse will be the margin of the thumb
+    z-index: 2;
+
+    &:hover{
+        background-color: @_trackBg_hover;
+        > .sb2-thumb{
+            background-color: @_thumbBg_normal;
+        }
+    }
+
+    &:active{
+        background-color: @_trackBg_active;
+        > .sb2-thumb{
+            background-color: @_thumbBg_normal;
+        }
+    }
+
+    !** T H U M B S **!
+    > .sb2-thumb{
+        &:extend( ._animable );
+        &:extend( ._defCursor );
+        border: @thumb_contrast_border_width solid @_contrastColor;
+        border-radius:    @thumb_roundness;
+        transition:       background-color @opacity_transitions; //, all @thumbs_transitions;
+        background-color: @_thumbBg_ghost;
+        z-index: 3;
+
+        &:hover {  background-color: @_thumbBg_hover; }
+        &:active { background-color: @_thumbBg_active; }
+
+        &.sb2-v { width:  @thumb_size; }
+        &.sb2-h { height: @thumb_size; }
+    }
+
+}
+
+&.sb2-expand-tracks{
+    .sb2-track{
+        transition: all @expand_transitions;
+    }
+
+    !** Style for both thumbs when expanded track **!
+    .sb2-expanded.sb2-track{
+        border-radius: 0;
+        margin: 0;
+
+        & > .sb2-thumb{
+            border-radius: (@thumb_size  + @thumb_margin ) / 2 ;
+            background-color: @_thumbBg_normal;
+
+            &:hover {  background-color: @_thumbBg_hover; }
+            &:active { background-color: @_thumbBg_active;}
+        }
+    }
+
+    //&.sb2-dragging .sb2-track.sb2-v, .sb2-track.sb2-v:hover, .sb2-expanded.sb2-track.sb2-v{
+    .sb2-expanded.sb2-track.sb2-v{
+        padding-left: @thumb_margin * 2;
+        padding-right: @thumb_margin * 2;
+        border-left: 1px solid @_borderExpanded;
+
+        .sb2-v{ width: @thumb_size + @thumb_margin; }
+    }
+
+    .sb2-expanded.sb2-track.sb2-h{
+        padding-top: @thumb_margin * 2;
+        padding-bottom: @thumb_margin * 2;
+        border-top: 1px solid @_borderExpanded;
+
+        .sb2-h{ height: @thumb_size + @thumb_margin; }
+    }
+}
+}
+
+body.sb2-body {
+&:extend( ._noSelectable );
+}
+
+!** TOOLS AND HELPERS **!
+
+.position( @pos, @list ) {
+position: @pos;
+& when not( extract(@list, 1) = null) {
+    top: extract(@list, 1);
+}
+& when not( extract(@list, 2) = null) {
+    right: extract(@list, 2);
+}
+& when not( extract(@list, 3) = null) {
+    bottom: extract(@list, 3);
+}
+& when not( extract(@list, 4) = null) {
+    left: extract(@list, 4);
+}
+}
+
+
+
+._animable{
+will-change: transform;
+transform: translateZ(0);
+}
+
+._backfacePerformanceFix{
+div, .icon, i.icon, img{
+    backface-visibility: visible !important;
+}
+.force-backface{
+    backface-visibility: hidden !important;
+}
+}
+
+._scrollFixes{
+-webkit-overflow-scrolling: touch !important;
+&::-webkit-scrollbar {
+    display: none !important;
+}
+}*/
